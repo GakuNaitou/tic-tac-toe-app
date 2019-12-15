@@ -4,23 +4,13 @@ import './index.css';
 
 // 1つの正方形を定義している。
 class Square extends React.Component {
-  // サブクラスのコンストラクタを定義するときは常にsuperを呼び出す必要がある。
-  // コンストラクターをもつ全てのReactコンポーネントクラスは、super(props)呼び出しで開始する必要がある。
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: null,
-    };
-  }
-
-  // this.setStateが呼び出される度にSquareが再描画される。
-  // また、コンポーネントの内部に子コンポーネントがある場合はそれも再描画される。
   render() {
     return (
       <button 
-      className="square" 
-      onClick={() => this.setState({value: 'X'})}>
-        {this.state.value}
+        className="square" 
+        onClick={() => this.props.onClick()} // 親から渡されてるonClick関数を呼び出す
+      > 
+        {this.props.value}
       </button>
     );
   }
@@ -28,8 +18,29 @@ class Square extends React.Component {
 
 // Squareを9つ並べたボードを定義している
 class Board extends React.Component {
+  // サブクラスのコンストラクタを定義するときは常にsuperを呼び出す必要がある。
+  // コンストラクターをもつ全てのReactコンポーネントクラスは、super(props)呼び出しで開始する必要がある。
+  // Squareの状態を親であるBoardで配列で管理する
+  // stateはコンポーネントに対してprivateなのでSquareから直接stateの更新はできない
+  constructor(props) {
+    super(props);
+    this.state = {
+      squares: Array(9).fill(null),
+    }
+  }
+
+  handleClick(i) {
+    // 不変データとする為に、squaresのコピーを作成している
+    const squares = this.state.squares.slice();
+    squares[i] = 'X';
+    this.setState({squares: squares});
+  }
+
   renderSquare(i) {
-    return <Square value={i} />;
+    return <Square
+      value={this.state.squares[i]} 
+      onClick={() => this.handleClick(i)} // onClickはクリックした時にSquareが呼び出すことができる関数
+    />;
   }
 
   render() {
