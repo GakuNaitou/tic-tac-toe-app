@@ -6,10 +6,7 @@ import './index.css';
 class Square extends React.Component {
   render() {
     return (
-      <button 
-        className="square" 
-        onClick={() => this.props.onClick()} // 親から渡されてるonClick関数を呼び出す
-      > 
+      <button className="square" onClick={this.props.onClick}>
         {this.props.value}
       </button>
     );
@@ -26,14 +23,22 @@ class Board extends React.Component {
     super(props);
     this.state = {
       squares: Array(9).fill(null),
+      xIsNext: true, // boolean型で次のプレイヤーを管理する
     }
   }
 
   handleClick(i) {
     // 不変データとする為に、squaresのコピーを作成している
     const squares = this.state.squares.slice();
-    squares[i] = 'X';
-    this.setState({squares: squares});
+    // 勝者が決まってる時と既に入力されてる時はクリックしても何もしない。
+    if (calculateWinner(squares) || squares[i]) {
+      return;
+    }
+    squares[i] = this.state.xIsNext ? 'X' : '0';
+    this.setState({
+      squares: squares,
+      xIsNext: !this.state.xIsNext,
+    });
   }
 
   renderSquare(i) {
@@ -44,7 +49,14 @@ class Board extends React.Component {
   }
 
   render() {
-    const status = 'Next player: X';
+    const winner = calculateWinner(this.state.squares);
+    let status;
+    // もし勝者がいたらstatusをwinnerにする
+    if (winner) {
+      status = 'Winner: ' + winner;
+    } else {
+      status = 'Next player: ' + (this.state.xIsNext ? 'X' : '0');
+    }
 
     return (
       <div>
@@ -90,3 +102,26 @@ ReactDOM.render(
   <Game />,
   document.getElementById('root')
 );
+
+// 勝ちを判断する関数
+function calculateWinner(squares) {
+  // 全ての勝ちパターンを格納
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+  for (let i = 0; i < lines.length; i++) {
+    const [a, b, c] = lines[i];
+    // 勝ちパターンと実際の配列を比較して揃ってる場合は勝者(X or 0)を返す
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      return squares[a];
+    }
+  }
+  return null;
+}
