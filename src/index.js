@@ -16,22 +16,15 @@ class Square extends React.Component {
 // Squareを9つ並べたボードを定義している
 class Board extends React.Component {
   renderSquare(i) {
-    return <Square
-      value={this.props.squares[i]} 
-      onClick={() => this.props.onClick(i)} // onClickはクリックした時にSquareが呼び出すことができる関数
-    />;
+    return (
+      <Square
+        value={this.props.squares[i]} 
+        onClick={() => this.props.onClick(i)} // onClickはクリックした時にSquareが呼び出すことができる関数
+      />
+    );
   }
 
   render() {
-    const winner = calculateWinner(this.props.squares);
-    let status;
-    // もし勝者がいたらstatusをwinnerにする
-    if (winner) {
-      status = 'Winner: ' + winner;
-    } else {
-      status = 'Next player: ' + (this.props.xIsNext ? 'X' : '0');
-    }
-
     return (
       <div>
         <div className="board-row">
@@ -63,7 +56,7 @@ class Game extends React.Component {
       }],
       stepNumber: 0,
       xIsNext: true,
-    }
+    };
   }
 
   handleClick(i) {
@@ -75,11 +68,12 @@ class Game extends React.Component {
     if (calculateWinner(squares) || squares[i]) {
       return;
     }
-    squares[i] = this.state.xIsNext ? 'X' : '0';
+    squares[i] = this.state.xIsNext ? 'X' : 'O';
     this.setState({
       history: history.concat([{
-        squares: squares,
+        squares: squares
       }]),
+      stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
     });
   }
@@ -98,10 +92,10 @@ class Game extends React.Component {
 
     const moves = history.map((step, move) => {
       const desc = move ?
-      'Go to move #' + move :
-      'Go to game start';
+        'Go to move #' + move :
+        'Go to game start';
       return (
-        <li>
+        <li key={move}>
           <button onClick={() => this.jumpTo(move)}>{desc}</button>
         </li>
       );
@@ -111,7 +105,7 @@ class Game extends React.Component {
     if (winner) {
       status = 'Winner: ' + winner;
     } else {
-      status = 'Next player: ' + (this.state.xIsNext ? 'X' : '0');
+      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
     }
 
     return (
