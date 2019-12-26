@@ -6,6 +6,7 @@ import './index.css';
 class Square extends React.Component {
   render() {
     return (
+      //クリック時にBoardのprops.onClickを呼び出す。
       <button className="square" onClick={this.props.onClick}>
         {this.props.value}
       </button>
@@ -19,7 +20,7 @@ class Board extends React.Component {
     return (
       <Square
         value={this.props.squares[i]} 
-        onClick={() => this.props.onClick(i)} // onClickはクリックした時にSquareが呼び出すことができる関数
+        onClick={() => this.props.onClick(i)} // クリックされた時に、Gameのhandleclickを呼び出す。(何番目のタイルかを渡す)
       />
     );
   }
@@ -48,6 +49,9 @@ class Board extends React.Component {
 }
 
 class Game extends React.Component {
+  // historyにsquaresを配列で入れて履歴を保持する。
+  // stepNumberで現在historyのどこにいるかを保持する。
+  // xIsNextで次のplayerの情報を保持する。
   constructor(props) {
     super(props);
     this.state = {
@@ -60,15 +64,18 @@ class Game extends React.Component {
   }
 
   handleClick(i) {
+    // historyに新しい履歴を追加する。現在のstepNumber + 1で追加する。
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
-    const current = history[history.length - 1];
     // 不変データとする為に、squaresのコピーを作成している
+    const current = history[history.length - 1];
     const squares = current.squares.slice();
     // 勝者が決まってる時と既に入力されてる時はクリックしても何もしない。
     if (calculateWinner(squares) || squares[i]) {
       return;
     }
+    // playerがxの時はそのsquareをXに, 違かったらOにする。
     squares[i] = this.state.xIsNext ? 'X' : 'O';
+    // squares, stepNumber, xIsNextを更新する。
     this.setState({
       history: history.concat([{
         squares: squares
@@ -78,6 +85,7 @@ class Game extends React.Component {
     });
   }
 
+  // stepNumberとxIsNextを更新する。(stepNumberが更新されるとタイルの情報がその時に書き換わる。)
   jumpTo(step) {
     this.setState({
       stepNumber: step,
@@ -146,7 +154,7 @@ function calculateWinner(squares) {
   ];
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
-    // 勝ちパターンと実際の配列を比較して揃ってる場合は勝者(X or 0)を返す
+    // 勝ちパターンと実際の配列を比較して揃ってる場合は勝者(X or O)を返す
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
       return squares[a];
     }
