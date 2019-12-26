@@ -98,6 +98,8 @@ class Game extends React.Component {
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
 
+    // historyの数だけ<li>を用意している。最初はGo to game startとなるようになってる。
+    // stepをmoveに格納して展開している。
     const moves = history.map((step, move) => {
       const desc = move ?
         'Go to move #' + move :
@@ -116,6 +118,7 @@ class Game extends React.Component {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
     }
 
+    // 一番親要素のrender
     return (
       <div className="game">
         <div className="game-board">
