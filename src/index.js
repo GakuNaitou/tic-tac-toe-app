@@ -2,6 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+// Gameコンポーネント > Boardコンポーネント > Squareコンポーネントで構成されている。
+// /public/index.htmlからこのファイルを読み込んでいる。
+// /public/index.html内のid="root"に対して、Gameコンポーネントを描画している。
+
 // 1つの正方形を定義している。
 class Square extends React.Component {
   render() {
